@@ -14,8 +14,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Extract project
-        run: |
-          unzip -q motor_market_v0_6_free_apk.zip
+        run: |motor_market_v0_6_fixed.zip
+          unzip -
           test -f motor_market_v0_6_free_apk/pubspec.yaml
 
       - name: Set up Java
