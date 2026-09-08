@@ -1,0 +1,51 @@
+name: Build Android APK
+
+"on":
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract project
+        run: |
+          unzip -q motor_bazar_v1_clean.zip
+          test -f motor_bazar_v1/pubspec.yaml
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Prepare Android
+        working-directory: motor_bazar_v1
+        run: flutter create . --platforms=android --project-name=motor_bazar
+
+      - name: Get packages
+        working-directory: motor_bazar_v1
+        run: flutter pub get
+
+      - name: Build APK
+        working-directory: motor_bazar_v1
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: motor-bazar-apk
+          path: motor_bazar_v1/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
